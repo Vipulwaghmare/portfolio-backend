@@ -1,6 +1,7 @@
 import logger from "../config/logger/index.js";
 import APIError from "../middlewares/ErrorHandler.js";
 import authServices from "../services/auth.services.js";
+import { verifyRefreshToken } from "../utils/jwtUtils.js";
 
 const loginController = async (req, res) => {
   const { email, password } = req.body;
@@ -27,8 +28,8 @@ const loginController = async (req, res) => {
       status: 400,
     });
   }
-  const accessToken = await authServices.getAccessToken();
-  const refreshToken = await authServices.getRefreshToken();
+  const accessToken = await authServices.getAccessToken(user);
+  const refreshToken = await authServices.getRefreshToken(user);
   return res.json({
     success: `User is logged in with email: ${email}`,
     accessToken,
@@ -67,9 +68,28 @@ const registerController = async (req, res) => {
   });
 };
 
+const getAccessTokenController = async (req, res) => {
+  const { refreshToken } = req.body;
+  const isVerified = await verifyRefreshToken(refreshToken);
+  if (!isVerified) {
+    throw new APIError({
+      message: "Invalid refresh token provided",
+      status: 400,
+    });
+  }
+  const user = await authServices.getUserByEmail(req.userEmail);
+  const accessToken = await authServices.getAccessToken(user);
+  const newRefreshToken = await authServices.getRefreshToken(user);
+  return res.json({
+    accessToken,
+    refreshToken: newRefreshToken,
+  });
+};
+
 const authControllers = {
   login: loginController,
   register: registerController,
+  getAccessToken: getAccessTokenController,
 };
 
 export default authControllers;
