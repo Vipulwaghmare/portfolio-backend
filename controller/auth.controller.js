@@ -1,7 +1,11 @@
 import logger from "../config/logger/index.js";
 import APIError from "../middlewares/ErrorHandler.js";
 import authServices from "../services/auth.services.js";
-import { verifyRefreshToken } from "../utils/jwtUtils.js";
+import { verifyRefreshToken } from "../utils/jwt.utils.js";
+import {
+  passwordUpdatedEmail,
+  passwordUpdatedFailedEmail,
+} from "../utils/mail.utils.js";
 
 const loginController = async (req, res) => {
   const { email, password } = req.body;
@@ -86,10 +90,52 @@ const getAccessTokenController = async (req, res) => {
   });
 };
 
+const updatePasswordController = async (req, res) => {
+  const { userEmail, oldPassword, newPassword } = req.body;
+  logger.info("[Updating password] email: %s", userEmail);
+  if (!userEmail || !oldPassword || !newPassword) {
+    throw new APIError({
+      message: "Invalid request",
+      status: 400,
+    });
+  }
+  const user = await authServices.getUserByEmail(userEmail);
+
+  if (!user) {
+    throw new APIError({
+      message: "User not found",
+      status: 400,
+    });
+  }
+  const isMatched = await authServices.validatePassword(user, password);
+
+  if (!isMatched) {
+    passwordUpdatedFailedEmail(userEmail);
+    throw new APIError({
+      message: "Email and Password doesn't match",
+      status: 400,
+    });
+  }
+
+  const updatedUser = await authServices.updateUserPassword(
+    userEmail,
+    newPassword,
+  );
+  passwordUpdatedEmail(userEmail);
+  logger.info("[Password Updated] email: %s", userEmail);
+  return res.json(updatedUser);
+};
+
+const forgotPasswordController = async (req, res) => {};
+const resetPasswordController = async (req, res) => {};
+
 const authControllers = {
   login: loginController,
   register: registerController,
   getAccessToken: getAccessTokenController,
+  forgotPassword: forgotPasswordController,
+  resetPassword: resetPasswordController,
+  updatePassword: updatePasswordController,
 };
 
 export default authControllers;

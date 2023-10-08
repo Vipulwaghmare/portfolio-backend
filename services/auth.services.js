@@ -6,6 +6,8 @@ const authServices = {
   validatePassword: (user, password) => user.validatePassword(password),
   getAccessToken: (user) => user.getAccessToken(),
   getRefreshToken: (user) => user.getRefreshToken(),
+  updateUserPassword: (email, password) =>
+    User.findOneAndUpdate({ email }, { password }, { new: true }),
 };
 
 export default authServices;
