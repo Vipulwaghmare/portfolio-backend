@@ -3,6 +3,7 @@ import dotEnv from "dotenv";
 dotEnv.config();
 import cors from "cors";
 import mongoose from "mongoose";
+import helmet from "helmet";
 import connectToDatabase from "./config/database.js";
 import authRouter from "./routes/auth.routes.js";
 import { notFound, convertError } from "./middlewares/ErrorHandler.js";
@@ -11,6 +12,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
+app.use(helmet());
 
 connectToDatabase();
 

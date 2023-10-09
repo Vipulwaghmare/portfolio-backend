@@ -1,5 +1,5 @@
 import { compare, hash } from "bcrypt";
-// import jwt from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { Schema, model } from "mongoose";
 import validator from "validator";
 
@@ -21,9 +21,31 @@ const userSchema = new Schema({
     minlength: [6, "password should be atleast 6 char"],
     select: false,
   },
+  passwordResetData: {
+    type: Object,
+    default: {
+      expiryTime: {
+        type: Date,
+        default: null,
+      },
+      token: {
+        type: String,
+        default: null,
+      },
+    },
+  },
 });
 
 userSchema.pre("save", async function (next) {
+  console.log("wow", this.isModified("password"));
+  if (!this.isModified("password")) {
+    return next();
+  }
+  this.password = await hash(this.password, 10);
+});
+
+userSchema.pre("updateOne", async function (next) {
+  console.log("wow2", this.isModified("password"));
   if (!this.isModified("password")) {
     return next();
   }
@@ -53,6 +75,6 @@ userSchema.methods.getRefreshToken = function () {
   );
 };
 
-const User =  model("User", userSchema);
+const User = model("User", userSchema);
 
 export default User;

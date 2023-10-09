@@ -1,6 +1,8 @@
 import { createTransport } from "nodemailer";
 import logger from "../config/logger/index.js";
 
+const RESET_PASSWORD_URL = process.env.RESET_PASSWORD_URL;
+
 const transporter = createTransport({
   port: parseInt(process.env.SMTP_PORT),
   host: process.env.SMTP_SERVER,
@@ -29,16 +31,35 @@ const getMailData = ({ to, subject, text, html, attachment }) => ({
 // }
 // sendEmail(data)
 
-const sendEmail = (data) => {
-  const mailData = getMailData(data);
-  transporter.sendEmail(mailData, (error, info) => {
-    if (error) {
-      logger.error(error);
-      return { error };
-    }
-    logger.info("[ Email Sent ] to: %s subject: %s", data.to, data.subject);
-    return { success: `Message Sent Successsfully. ID: ${info.messageId}` };
+const sendEmailPromise = (mailData) =>
+  new Promise((res, rej) => {
+    transporter.sendEmail(mailData, (error, info) => {
+      if (error) {
+        logger.error(error);
+        rej(error);
+      }
+      logger.info("[ Email Sent ] to: %s subject: %s", data.to, data.subject);
+      return res({
+        success: `Message Sent Successsfully. ID: ${info.messageId}`,
+      });
+    });
   });
+
+const sendEmail = async (data, throwError = false) => {
+  const mailData = getMailData(data);
+  // transporter.sendEmail(mailData, (error, info) => {
+  //   if (error) {
+  //     logger.error(error);
+  //     return { error };
+  //   }
+  //   logger.info("[ Email Sent ] to: %s subject: %s", data.to, data.subject);
+  //   return { success: `Message Sent Successsfully. ID: ${info.messageId}` };
+  // });
+  try {
+    await sendEmailPromise(mailData);
+  } catch (e) {
+    if (throwError) throw new Error("Failed to send the email");
+  }
 };
 
 const emailTemplates = {
@@ -50,6 +71,10 @@ const emailTemplates = {
     subject: "You have tried updating your password for APPICATION NAME",
     text: "You have tried updating your password but failed. If not your DO THE FOLLOWING",
   },
+  forgotPasswordEmail: (token) => ({
+    subject: "You have requested to request password reset",
+    text: `Your have requested to reset password. Please visit following link and reset your password: ${RESET_PASSWORD_URL}${token}`,
+  }),
 };
 
 export const passwordUpdatedEmail = (userEmail) =>
@@ -63,5 +88,14 @@ export const passwordUpdatedFailedEmail = (userEmail) =>
     ...emailTemplates.passwordUpdatedFailed,
     to: userEmail,
   });
+
+export const sendPasswordResetEmail = (userEmail, token) =>
+  sendEmail(
+    {
+      ...emailTemplates.forgotPasswordEmail(token),
+      to: userEmail,
+    },
+    true,
+  );
 
 export default sendEmail;

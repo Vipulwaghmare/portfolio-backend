@@ -1,10 +1,12 @@
 import logger from "../config/logger/index.js";
 import APIError from "../middlewares/ErrorHandler.js";
 import authServices from "../services/auth.services.js";
+import { genRandomString } from "../utils/crypto.utils.js";
 import { verifyRefreshToken } from "../utils/jwt.utils.js";
 import {
   passwordUpdatedEmail,
   passwordUpdatedFailedEmail,
+  sendPasswordResetEmail,
 } from "../utils/mail.utils.js";
 
 const loginController = async (req, res) => {
@@ -126,8 +128,67 @@ const updatePasswordController = async (req, res) => {
   return res.json(updatedUser);
 };
 
-const forgotPasswordController = async (req, res) => {};
-const resetPasswordController = async (req, res) => {};
+const forgotPasswordController = async (req, res) => {
+  const { email } = req.body;
+  logger.info("[Forgot Password Request] email: %s", email);
+  if (!email) {
+    throw new APIError({
+      message: "Invalid request. Please provide email.",
+      status: 400,
+    });
+  }
+  const user = await authServices.getUserByEmail(email);
+
+  if (!user) {
+    throw new APIError({
+      message: "User not found",
+      status: 400,
+    });
+  }
+
+  const token = genRandomString();
+
+  const currentDate = new Date();
+  const expiryTime = new Date(currentDate.getTime() + 15 * 60 * 1000);
+  const passwordResetData = {
+    token,
+    expiryTime,
+  };
+
+  await authServices.updateUserPasswordResetData(email, passwordResetData);
+  await sendPasswordResetEmail(token);
+
+  return res.json({
+    message: "Successfully send password reset email to your email",
+  });
+};
+const resetPasswordController = async (req, res) => {
+  const { password, token } = req.body;
+  if (!password || !token) {
+    throw new APIError({
+      message: "Invalid request",
+      status: 400,
+    });
+  }
+  const user = await authServices.getUserByForgotPasswordToken(token);
+  if (!user?.passwordResetData?.expiryTime) {
+    throw new APIError({
+      message: "You have not requested to reset password",
+      status: 400,
+    });
+  }
+
+  if (user.passwordResetData.expiryTime <= new Date()) {
+    throw new APIError({
+      message: "Your password reset link is expired. Please try again.",
+      status: 400,
+    });
+  }
+  await authServices.updateUserPassword(user.email, password);
+  return res.json({
+    message: "Successfully updated user password",
+  });
+};
 
 const authControllers = {
   login: loginController,
