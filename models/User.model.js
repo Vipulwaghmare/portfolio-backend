@@ -37,7 +37,6 @@ const userSchema = new Schema({
 });
 
 userSchema.pre("save", async function (next) {
-  console.log("wow", this.isModified("password"));
   if (!this.isModified("password")) {
     return next();
   }
@@ -45,7 +44,6 @@ userSchema.pre("save", async function (next) {
 });
 
 userSchema.pre("updateOne", async function (next) {
-  console.log("wow2", this.isModified("password"));
   if (!this.isModified("password")) {
     return next();
   }
