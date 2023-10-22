@@ -8,6 +8,7 @@ import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
 import connectToDatabase from "./config/database.js";
 import authRouter from "./routes/auth.routes.js";
+import productRouter from "./routes/product.routes.js";
 import { notFound, convertError } from "./middlewares/ErrorHandler.js";
 const swaggerDocument = YAML.load("./swagger/main.yaml");
 
@@ -21,6 +22,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 connectToDatabase();
 
 app.use("/api/v1", authRouter);
+app.use("/api/v1", productRouter);
 
 app.use(convertError);
 app.use(notFound);
