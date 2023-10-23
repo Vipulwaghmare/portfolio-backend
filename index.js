@@ -9,6 +9,7 @@ import swaggerUi from "swagger-ui-express";
 import connectToDatabase from "./config/database.js";
 import authRouter from "./routes/auth.routes.js";
 import productRouter from "./routes/product.routes.js";
+import todoRouter from "./routes/todo.routes.js";
 import { notFound, convertError } from "./middlewares/ErrorHandler.js";
 const swaggerDocument = YAML.load("./swagger/main.yaml");
 
@@ -23,6 +24,7 @@ connectToDatabase();
 
 app.use("/api/v1", authRouter);
 app.use("/api/v1", productRouter);
+app.use("/api/v1/todo", todoRouter);
 
 app.use(convertError);
 app.use(notFound);

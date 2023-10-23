@@ -50,14 +50,12 @@ const deleteProductController = async (req, res) => {
   return res.send({ message: "Product not found" });
 };
 const updateProductController = async (req, res) => {};
-const searchProductController = async (req, res) => {};
 
 const productControllers = {
   getProductById: getProductByIdController,
   getProducts: getProductsController,
   addProduct: addProductController,
   updateProduct: updateProductController,
-  searchProduct: searchProductController,
   deleteProduct: deleteProductController,
 };
 

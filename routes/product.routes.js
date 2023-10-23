@@ -6,9 +6,6 @@ import verifyUser from "../middlewares/verifyUser.js";
 const productRouter = Router();
 
 productRouter
-  .route("/product/search")
-  .get(catchAsyncErrors(productControllers.searchProduct));
-productRouter
   .route("/product/:id")
   .get(catchAsyncErrors(productControllers.getProductById));
 productRouter
