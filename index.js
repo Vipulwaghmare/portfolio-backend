@@ -11,6 +11,7 @@ import authRouter from "./routes/auth.routes.js";
 import productRouter from "./routes/product.routes.js";
 import todoRouter from "./routes/todo.routes.js";
 import { notFound, convertError } from "./middlewares/ErrorHandler.js";
+import userRouter from "./routes/user.routes.js";
 const swaggerDocument = YAML.load("./swagger/main.yaml");
 
 const app = express();
@@ -23,6 +24,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 connectToDatabase();
 
 app.use("/api/v1", authRouter);
+app.use("/api/v1/user", userRouter);
 app.use("/api/v1", productRouter);
 app.use("/api/v1/todo", todoRouter);
 
