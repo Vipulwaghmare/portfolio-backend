@@ -156,7 +156,7 @@ const forgotPasswordController = async (req, res) => {
   };
 
   await authServices.updateUserPasswordResetData(email, passwordResetData);
-  await sendPasswordResetEmail(token);
+  await sendPasswordResetEmail(email, token);
 
   return res.json({
     message: "Successfully send password reset email to your email",

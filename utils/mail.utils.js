@@ -1,5 +1,7 @@
 import { createTransport } from "nodemailer";
 import logger from "../config/logger/index.js";
+import dotEnv from "dotenv";
+dotEnv.config();
 
 const RESET_PASSWORD_URL = process.env.RESET_PASSWORD_URL;
 
@@ -56,6 +58,7 @@ const sendEmail = async (data, throwError = false) => {
   //   return { success: `Message Sent Successsfully. ID: ${info.messageId}` };
   // });
   try {
+    console.log({ mailData });
     await sendEmailPromise(mailData);
   } catch (e) {
     if (throwError) throw new Error("Failed to send the email");
