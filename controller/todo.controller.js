@@ -34,8 +34,19 @@ const updateTodoController = async (req, res) => {
 
 const deleteTodoController = async (req, res) => {
   const id = req.params.id;
-  const deletedTodo = await Todo.findByIdAndDelete(id);
-  res.status(200).json(deletedTodo);
+  const todo = await Todo.findById(id);
+  if (todo.userId.toString() === req.body.userId) {
+    const deletedTodo = await todo.deleteOne();
+    res.status(200).json(deletedTodo);
+  } else {
+    res.status(401).json({ message: "Unauthorized" });
+  }
+};
+
+const deleteAllTodosController = async (req, res) => {
+  const userId = req.body.userId;
+  const deletedTodos = await Todo.deleteMany({ userId });
+  res.status(200).json(deletedTodos);
 };
 
 const todoControllers = {
@@ -43,6 +54,7 @@ const todoControllers = {
   getTodos: getTodosController,
   deleteTodo: deleteTodoController,
   updateTodo: updateTodoController,
+  deleteUserTodos: deleteAllTodosController,
 };
 
 export default todoControllers;

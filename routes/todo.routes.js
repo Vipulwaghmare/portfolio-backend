@@ -12,6 +12,9 @@ todoRouter
   .route("/")
   .get(verifyUser, catchAsyncErrors(todoControllers.getTodos));
 todoRouter
+  .route("/all")
+  .delete(verifyUser, catchAsyncErrors(todoControllers.deleteUserTodos));
+todoRouter
   .route("/:id")
   .delete(verifyUser, catchAsyncErrors(todoControllers.deleteTodo));
 todoRouter
