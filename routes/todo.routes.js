@@ -7,10 +7,10 @@ const todoRouter = Router();
 
 todoRouter
   .route("/")
-  .post(verifyUser, catchAsyncErrors(todoControllers.backupTodo));
+  .post(verifyUser, catchAsyncErrors(todoControllers.addToDo));
 todoRouter
   .route("/")
-  .get(verifyUser, catchAsyncErrors(todoControllers.recoverTodo));
+  .get(verifyUser, catchAsyncErrors(todoControllers.getTodos));
 todoRouter
   .route("/")
   .delete(verifyUser, catchAsyncErrors(todoControllers.deleteTodo));

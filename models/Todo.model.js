@@ -7,29 +7,19 @@ const todoSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: [true, "Please provide Title"],
+    required: [true, "Please provide Description"],
   },
   completed: {
     type: Boolean,
-    required: [true, "Please provide Title"],
+    required: [true, "Please provide Status of Todo"],
   },
-  createdAt: {
-    type: Date,
-    required: [true, "Please provide Date"],
-  },
-});
-
-const userTodoSchema = new mongoose.Schema({
-  todos: {
-    type: [todoSchema],
-  },
-  user: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref: "User",
-    required: [true, "User Not Found"],
+    // required: [true, "User Not Found"],
   },
 });
 
-const Todo = mongoose.model("Todo", userTodoSchema);
+const Todo = mongoose.model("Todo", todoSchema);
 
 export default Todo;

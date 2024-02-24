@@ -93,15 +93,15 @@ const getAccessTokenController = async (req, res) => {
 };
 
 const updatePasswordController = async (req, res) => {
-  const { userEmail, oldPassword, newPassword } = req.body;
-  logger.info("[Updating password] email: %s", userEmail);
-  if (!userEmail || !oldPassword || !newPassword) {
+  const { userId, oldPassword, newPassword } = req.body;
+  logger.info("[Updating password] UserId: %s", userId);
+  if (!oldPassword || !newPassword) {
     throw new APIError({
       message: "Invalid request",
       status: 400,
     });
   }
-  const user = await authServices.getUserByEmail(userEmail);
+  const user = await authServices.getUserById(userId);
 
   if (!user) {
     throw new APIError({
@@ -109,8 +109,8 @@ const updatePasswordController = async (req, res) => {
       status: 400,
     });
   }
-  const isMatched = await authServices.validatePassword(user, password);
-
+  const isMatched = await authServices.validatePassword(user, oldPassword);
+  const userEmail = user.email;
   if (!isMatched) {
     passwordUpdatedFailedEmail(userEmail);
     throw new APIError({
@@ -162,6 +162,7 @@ const forgotPasswordController = async (req, res) => {
     message: "Successfully send password reset email to your email",
   });
 };
+
 const resetPasswordController = async (req, res) => {
   const { password, token } = req.body;
   if (!password || !token) {

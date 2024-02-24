@@ -11,7 +11,6 @@ const verifyUser = async (req, res, next) => {
     const token = authHeader.split(" ")[1];
     try {
       const decoded = await verifyAccessToken(token);
-      req.body.userEmail = decoded.email;
       req.body.userId = decoded.id;
       next();
     } catch (e) {
