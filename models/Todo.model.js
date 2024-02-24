@@ -18,6 +18,10 @@ const todoSchema = new mongoose.Schema({
     ref: "User",
     // required: [true, "User Not Found"],
   },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 const Todo = mongoose.model("Todo", todoSchema);

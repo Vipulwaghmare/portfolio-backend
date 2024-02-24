@@ -8,30 +8,41 @@ const addTodoController = async (req, res) => {
     userId: new mongoose.Types.ObjectId(req.body.userId),
   });
 
-  try {
-    const savedTodo = await newTodo.save();
-    res.status(201).json(savedTodo);
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+  const savedTodo = await newTodo.save();
+  res.status(201).json(savedTodo);
 };
 
 const getTodosController = async (req, res) => {
-  try {
-    const userId = req.body.userId;
-    const todos = await Todo.find({ userId });
-    res.status(200).json(todos);
-  } catch (error) {
-    res.status(404).json({ error: error.message });
-  }
+  const userId = req.body.userId;
+  const todos = await Todo.find({ userId });
+  res.status(200).json(
+    todos.map(({ _id, title, description, completed, createdAt }) => ({
+      id: _id,
+      title,
+      description,
+      completed,
+      createdAt,
+    })),
+  );
 };
 
-const deleteTodoController = async (req, res) => {};
+const updateTodoController = async (req, res) => {
+  const id = req.params.id;
+  const updatedTodo = await Todo.findByIdAndUpdate(id, req.body, { new: true });
+  res.status(200).json(updatedTodo);
+};
+
+const deleteTodoController = async (req, res) => {
+  const id = req.params.id;
+  const deletedTodo = await Todo.findByIdAndDelete(id);
+  res.status(200).json(deletedTodo);
+};
 
 const todoControllers = {
   addToDo: addTodoController,
   getTodos: getTodosController,
   deleteTodo: deleteTodoController,
+  updateTodo: updateTodoController,
 };
 
 export default todoControllers;
