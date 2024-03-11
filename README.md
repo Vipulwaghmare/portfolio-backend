@@ -39,3 +39,7 @@ This is an backend project built using Express.js. It has features such as authe
    ```shell
    git clone https://github.com/your-username/ecommerce-express-app.git
    ```
+
+<!-- Deploying -->
+
+https://firebase.google.com/docs/hosting/frameworks/express#before_you_begin

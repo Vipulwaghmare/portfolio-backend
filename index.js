@@ -23,6 +23,7 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 connectToDatabase();
 
+app.get("/", (req, res) => res.send("Welcome to API"));
 app.use("/api/v1", authRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1", productRouter);
@@ -38,3 +39,5 @@ mongoose.connection.once("open", () => {
     console.log(`App is running at ${PORT}`);
   });
 });
+
+export default app;
