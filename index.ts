@@ -20,7 +20,6 @@ import rateLimiter from "./middlewares/rateLimiter.js";
 import initializeSocketIO from "./services/socket/index.js";
 import chatRouter from "./routes/chat.routes.js";
 const swaggerDocument = YAML.load("./swagger/main.yaml");
-
 const app = express();
 const httpServer = createServer(app);
 // Socket IO
