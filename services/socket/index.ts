@@ -1,12 +1,15 @@
+import { Server, Socket } from "socket.io";
+import { DefaultEventsMap } from "socket.io/dist/typed-events";
+
 export const CHAT_EVENTS = {
   JOIN_CHAT: "JOIN_CHAT",
   START_TYPING: "START_TYPING",
   STOP_TYPING: "STOP_TYPING",
   DISCONNECT: "DISCONNECT",
   SOCKET_ERROR: "SOCKET_ERROR",
-};
+} as const;
 
-const mountEvents = (socket) => {
+const mountEvents = (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
   // Join chat
   socket.on(CHAT_EVENTS.JOIN_CHAT, (chatId) => {
     socket.join(chatId);
@@ -27,7 +30,7 @@ const mountEvents = (socket) => {
   });
 };
 
-const initializeSocketIO = (io) => {
+const initializeSocketIO = (io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
   return io.on("connection", async (socket) => {
     try {
       // // parse the cookies from the handshake headers (This is only possible if client has `withCredentials: true`)
@@ -68,7 +71,7 @@ const initializeSocketIO = (io) => {
       socket.emit(
         CHAT_EVENTS.SOCKET_ERROR,
         error?.message ||
-          "Something went wrong while connecting to the socket.",
+        "Something went wrong while connecting to the socket.",
       );
     }
   });

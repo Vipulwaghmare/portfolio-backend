@@ -30,7 +30,8 @@
     "swagger-ui-express": "^5.0.0",
     "validator": "^13.11.0",
     "winston": "^3.11.0",
-    "yamljs": "^0.3.0"
+    "yamljs": "^0.3.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.7",

@@ -1,4 +1,5 @@
 import { Router } from "express";
+import { loginSchema } from "../schemas/auth.schema";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors";
 import verifyUser from "../middlewares/verifyUser";
 import authControllers from "../controller/auth.controllers";

@@ -17,7 +17,7 @@ import todoRouter from "./routes/todo.routes";
 import { notFound, convertError } from "./middlewares/ErrorHandler";
 import userRouter from "./routes/user.routes";
 import rateLimiter from "./middlewares/rateLimiter";
-import initializeSocketIO from "./services/socket/index.js";
+import initializeSocketIO from "./services/socket/index";
 import chatRouter from "./routes/chat.routes";
 const swaggerDocument = YAML.load("./swagger/main.yaml");
 const app = express();
@@ -53,8 +53,8 @@ app.use("/api/v1/todo", todoRouter);
 app.use("/api/v1/chat", chatRouter);
 
 // Error Handling
-app.use(convertError);
 app.use(notFound);
+app.use(convertError);
 
 const PORT = process.env.PORT;
 

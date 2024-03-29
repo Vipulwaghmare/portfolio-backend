@@ -1,6 +1,7 @@
 
 import logger from "../config/logger";
 import APIError from "../middlewares/ErrorHandler";
+import { accessTokenSchema, forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema, updatePasswordSchema } from "../schemas/auth.schema";
 import authServices from "../services/auth.services";
 import { genRandomString } from "../utils/crypto.utils";
 import { verifyRefreshToken } from "../utils/jwt.utils";
@@ -23,7 +24,8 @@ type TAuthController = {
 
 const authControllers: TAuthController = {
   login: async (req, res) => {
-    const { email, password } = req.body;
+    const requestBody = loginSchema.parse(req.body);
+    const { email, password } = requestBody;
     logger.info("[Logging In] email: %s", email);
     if (!email || !password) {
       throw new APIError({
@@ -56,7 +58,8 @@ const authControllers: TAuthController = {
     });
   },
   register: async (req, res) => {
-    const { name, email, password } = req.body;
+    const requestBody = registerSchema.parse(req.body);
+    const { name, email, password } = requestBody;
     logger.info("[Sign Up] email: %s", email);
 
     if (!email || !password) {
@@ -86,7 +89,8 @@ const authControllers: TAuthController = {
     });
   },
   getAccessToken: async (req, res) => {
-    const { refreshToken } = req.body;
+    const body = accessTokenSchema.parse(req.body);
+    const { refreshToken, userEmail } = body;
     const isVerified = await verifyRefreshToken(refreshToken);
     if (!isVerified) {
       throw new APIError({
@@ -94,7 +98,7 @@ const authControllers: TAuthController = {
         status: 400,
       });
     }
-    const user = await authServices.getUserByEmail(req.body.userEmail);
+    const user = await authServices.getUserByEmail(userEmail);
     const accessToken = await authServices.getAccessToken(user);
     const newRefreshToken = await authServices.getRefreshToken(user);
     return res.json({
@@ -103,7 +107,8 @@ const authControllers: TAuthController = {
     });
   },
   updatePassword: async (req, res) => {
-    const { userId, oldPassword, newPassword } = req.body;
+    const body = updatePasswordSchema.parse(req.body);
+    const { userId, oldPassword, newPassword } = body;
     logger.info("[Updating password] UserId: %s", userId);
     if (!oldPassword || !newPassword) {
       throw new APIError({
@@ -138,7 +143,8 @@ const authControllers: TAuthController = {
     return res.json(updatedUser);
   },
   forgotPassword: async (req, res) => {
-    const { email } = req.body;
+    const body = forgotPasswordSchema.parse(req.body);
+    const { email } = body;
     logger.info("[Forgot Password Request] email: %s", email);
     if (!email) {
       throw new APIError({
@@ -172,7 +178,8 @@ const authControllers: TAuthController = {
     });
   },
   resetPassword: async (req, res) => {
-    const { password, token } = req.body;
+    const body = resetPasswordSchema.parse(req.body);
+    const { password, token } = body;
     if (!password || !token) {
       throw new APIError({
         message: "Invalid request",
