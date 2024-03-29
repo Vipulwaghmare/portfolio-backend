@@ -1,4 +1,4 @@
-import authServices from "../services/auth.services.js";
+import authServices from "../services/auth.services";
 import { TRequest } from './types';
 
 type TUserController = {

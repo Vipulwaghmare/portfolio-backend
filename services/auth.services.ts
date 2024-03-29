@@ -1,4 +1,4 @@
-import User from "../models/User.model.js";
+import User from "../models/User.model";
 
 const skippableUserFields = "-__v -passwordResetData";
 

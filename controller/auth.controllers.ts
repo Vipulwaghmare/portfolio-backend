@@ -1,14 +1,14 @@
 
 import logger from "../config/logger";
 import APIError from "../middlewares/ErrorHandler";
-import authServices from "../services/auth.services.js";
-import { genRandomString } from "../utils/crypto.utils.js";
-import { verifyRefreshToken } from "../utils/jwt.utils.js";
+import authServices from "../services/auth.services";
+import { genRandomString } from "../utils/crypto.utils";
+import { verifyRefreshToken } from "../utils/jwt.utils";
 import {
   passwordUpdatedEmail,
   passwordUpdatedFailedEmail,
   sendPasswordResetEmail,
-} from "../utils/mail.utils.js";
+} from "../utils/mail.utils";
 import { TRequest } from './types';
 
 

@@ -1,5 +1,5 @@
 import APIError from "../middlewares/ErrorHandler";
-import productServices from "../services/product.services.js";
+import productServices from "../services/product.services";
 import { TRequest } from "./types.js";
 
 const MAX_LIMIT = 100;

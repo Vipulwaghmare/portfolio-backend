@@ -1,4 +1,4 @@
-import chatServices from "../services/chat.services.js";
+import chatServices from "../services/chat.services";
 import { TRequest } from "./types.js";
 
 type TChatControllers = {

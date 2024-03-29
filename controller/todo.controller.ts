@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Todo from "../models/Todo.model.js";
+import Todo from "../models/Todo.model";
 import { TRequest } from './types';
 
 type TodoControllers = {

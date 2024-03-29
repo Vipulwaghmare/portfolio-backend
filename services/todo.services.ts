@@ -1,4 +1,4 @@
-import Todo from "../models/Todo.model.js";
+import Todo from "../models/Todo.model";
 
 const todoServices = {
   getUserTodos: async (userId) => {},
