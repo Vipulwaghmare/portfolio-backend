@@ -1,5 +1,5 @@
-import devLogger from "./devLogger.js";
-import prodLogger from "./prodLogger.js";
+import devLogger from "./devLogger";
+import prodLogger from "./prodLogger";
 
 // How to use
 // logger.info("logger")

@@ -1,5 +1,5 @@
 import { createTransport } from "nodemailer";
-import logger from "../config/logger/index.js";
+import logger from "../config/logger";
 import dotEnv from "dotenv";
 dotEnv.config();
 

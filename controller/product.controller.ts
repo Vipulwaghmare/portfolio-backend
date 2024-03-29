@@ -1,4 +1,4 @@
-import APIError from "../middlewares/ErrorHandler.js";
+import APIError from "../middlewares/ErrorHandler";
 import productServices from "../services/product.services.js";
 import { TRequest } from "./types.js";
 

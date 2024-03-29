@@ -1,8 +1,8 @@
 import { createLogger, format, transports } from "winston";
 
-const { combine, timestamp, label, printf, colorize } = format;
+const { combine, timestamp, printf } = format;
 
-const myFormat = printf(({ level, message, label, timestamp }) => {
+const myFormat = printf(({ level, message, timestamp }) => {
   return `[${timestamp}] - [${level}] : ${message}`;
 });
 

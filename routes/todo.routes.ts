@@ -1,6 +1,6 @@
 import { Router } from "express";
-import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
-import verifyUser from "../middlewares/verifyUser.js";
+import catchAsyncErrors from "../middlewares/catchAsyncErrors";
+import verifyUser from "../middlewares/verifyUser";
 import todoControllers from "../controller/todo.controller";
 
 const todoRouter = Router();

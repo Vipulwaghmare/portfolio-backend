@@ -1,6 +1,6 @@
 
-import logger from "../config/logger/index.js";
-import APIError from "../middlewares/ErrorHandler.js";
+import logger from "../config/logger";
+import APIError from "../middlewares/ErrorHandler";
 import authServices from "../services/auth.services.js";
 import { genRandomString } from "../utils/crypto.utils.js";
 import { verifyRefreshToken } from "../utils/jwt.utils.js";
@@ -94,7 +94,7 @@ const authControllers: TAuthController = {
         status: 400,
       });
     }
-    const user = await authServices.getUserByEmail(req.userEmail);
+    const user = await authServices.getUserByEmail(req.body.userEmail);
     const accessToken = await authServices.getAccessToken(user);
     const newRefreshToken = await authServices.getRefreshToken(user);
     return res.json({

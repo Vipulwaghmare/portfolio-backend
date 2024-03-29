@@ -1,6 +1,14 @@
-import logger from "../config/logger/index.js";
+import { NextFunction, Request, Response } from "express";
+import logger from "../config/logger";
 
-const Handler = (err, req, res) => {
+type TApiError = {
+  message: string;
+  status: number;
+  stack?: string;
+  errors?: string[];
+}
+
+const Handler = (err: TApiError, req: Request, res: Response) => {
   logger.error(err.message);
   logger.error(err.stack);
   const response = {
@@ -18,7 +26,12 @@ class APIError extends Error {
     @param {Array} errors = Array of validation fields errors
     @param {Number} status = HTTP status code
   */
-  constructor({ message, stack, errors, status, isPublic = false }) {
+  message: TApiError["message"];
+  errors: TApiError["errors"];
+  status: TApiError["status"];
+  stack: TApiError["stack"];
+
+  constructor({ message, stack, errors, status }: TApiError) {
     super(message);
     this.name = this.constructor.name;
     this.message = message;
@@ -28,7 +41,7 @@ class APIError extends Error {
   }
 }
 
-export const convertError = (err, req, res, next) => {
+export const convertError = (err: any, req: Request, res: Response, next: NextFunction) => {
   let convertedError = err;
   if (!(err instanceof APIError)) {
     convertedError = new APIError({
@@ -36,15 +49,15 @@ export const convertError = (err, req, res, next) => {
       status: err.status || 500,
     });
   }
-  return Handler(convertedError, req, res, next);
+  return Handler(convertedError, req, res);
 };
 
-export const notFound = (req, res, next) => {
+export const notFound = (req: Request, res: Response, next: NextFunction) => {
   const err = new APIError({
     message: "API not found",
     status: 404,
   });
-  return Handler(err, req, res, next);
+  return Handler(err, req, res);
 };
 
 export default APIError;

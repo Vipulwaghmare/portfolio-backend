@@ -1,7 +1,9 @@
-import logger from "../config/logger/index.js";
+import { NextFunction, Request, Response } from "express";
+import logger from "../config/logger";
 import { verifyAccessToken } from "../utils/jwt.utils.js";
 
-const verifyUser = async (req, res, next) => {
+// TODO: Add API ERROR
+const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const authHeader =
       req.headers["authorization"] || req.headers["Authorization"];

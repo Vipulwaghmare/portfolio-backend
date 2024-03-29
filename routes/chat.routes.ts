@@ -1,5 +1,5 @@
 import express from "express";
-import verifyUser from "../middlewares/verifyUser.js";
+import verifyUser from "../middlewares/verifyUser";
 import chatControllers from "../controller/chat.controller";
 
 const chatRouter = express.Router();

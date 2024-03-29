@@ -1,4 +1,5 @@
 import { rateLimit } from "express-rate-limit";
+import APIError from "./ErrorHandler";
 
 const rateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -6,15 +7,14 @@ const rateLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   keyGenerator: (req) => {
-    return req.clientIp; // IP address from requestIp.mw(), as opposed to req.ip
+    return req.clientIp || ""; // IP address from requestIp.mw(), as opposed to req.ip
   },
   handler: (_, __, ___, options) => {
-    throw new ApiError(
-      options.statusCode || 500,
-      `There are too many requests. You are only allowed ${
-        options.max
-      } requests per ${options.windowMs / 60000} minutes`,
-    );
+    throw new APIError({
+      status: options.statusCode || 500,
+      message: `There are too many requests. You are only allowed ${options.max
+        } requests per ${options.windowMs / 60000} minutes`,
+    });
   },
 });
 
