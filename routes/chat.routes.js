@@ -1,37 +1,13 @@
 import express from "express";
-import { Server } from "socket.io";
+import verifyUser from "../middlewares/verifyUser.js";
+import chatControllers from "../controller/chat.controller.js";
 
-const router = express.Router();
+const chatRouter = express.Router();
 
-// Create a new instance of Socket.io
-const io = new Server();
+chatRouter.use(verifyUser);
 
-// Route for handling chat messages
-router.post("/chat", (req, res) => {
-  // Get the message from the request body
-  const message = req.body.message;
+chatRouter.get("/", chatControllers.getAllChats);
 
-  // Emit the message to all connected clients
-  io.emit("chatMessage", message);
+chatRouter.get("/users", chatControllers.searchUsers);
 
-  // Send a response
-  res.status(200).json({ success: true, message: "Message sent" });
-});
-
-// Route for handling socket.io connection
-router.get("/socket.io", (req, res) => {
-  // Handle socket.io connection
-  io.on("connection", (socket) => {
-    // Handle incoming chat messages
-    socket.on("chatMessage", (message) => {
-      // Broadcast the message to all connected clients except the sender
-      socket.broadcast.emit("chatMessage", message);
-    });
-  });
-
-  res
-    .status(200)
-    .json({ success: true, message: "Socket.io connection established" });
-});
-
-export default router;
+export default chatRouter;

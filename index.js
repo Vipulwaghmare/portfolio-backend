@@ -5,6 +5,7 @@ dotEnv.config();
 import { Server } from "socket.io";
 import requestIp from "request-ip";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import YAML from "yamljs";
 import mongoose from "mongoose";
 import helmet from "helmet";
@@ -16,11 +17,12 @@ import todoRouter from "./routes/todo.routes.js";
 import { notFound, convertError } from "./middlewares/ErrorHandler.js";
 import userRouter from "./routes/user.routes.js";
 import rateLimiter from "./middlewares/rateLimiter.js";
+import initializeSocketIO from "./services/socket/index.js";
+import chatRouter from "./routes/chat.routes.js";
 const swaggerDocument = YAML.load("./swagger/main.yaml");
 
 const app = express();
 const httpServer = createServer(app);
-connectToDatabase();
 
 // Socket IO
 const io = new Server(httpServer, {
@@ -32,21 +34,25 @@ const io = new Server(httpServer, {
 });
 app.set("io", io); // using set method to mount the `io` instance on the app to avoid usage of `global`
 
+connectToDatabase();
+initializeSocketIO(io);
+
 // Middlewares
 app.use(express.json());
 app.use(cors());
 app.use(helmet());
 app.use(requestIp.mw());
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-// Rate Limiter
+app.use(cookieParser());
 app.use(rateLimiter);
 
 // Routes
-app.get("/", (req, res) => res.send("Welcome to API"));
+app.get("/", (_, res) => res.send("Welcome to API"));
 app.use("/api/v1", authRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1", productRouter);
 app.use("/api/v1/todo", todoRouter);
+app.use("/api/v1/chat", chatRouter);
 
 // Error Handling
 app.use(convertError);
