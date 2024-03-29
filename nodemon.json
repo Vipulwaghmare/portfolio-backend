@@ -1,0 +1,6 @@
+{
+  "watch": ["*.ts", "*.js", ".env"],
+  "ext": "js,ts,json",
+  "ignore": ["logs/*"],
+  "exec": "ts-node --transpile-only index.ts"
+}

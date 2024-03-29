@@ -10,7 +10,7 @@ import YAML from "yamljs";
 import mongoose from "mongoose";
 import helmet from "helmet";
 import swaggerUi from "swagger-ui-express";
-import connectToDatabase from "./config/database.js";
+import connectToDatabase from "./config/database";
 import authRouter from "./routes/auth.routes.js";
 import productRouter from "./routes/product.routes.js";
 import todoRouter from "./routes/todo.routes.js";
@@ -23,7 +23,6 @@ const swaggerDocument = YAML.load("./swagger/main.yaml");
 
 const app = express();
 const httpServer = createServer(app);
-
 // Socket IO
 const io = new Server(httpServer, {
   pingTimeout: 60000,
