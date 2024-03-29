@@ -1,7 +1,7 @@
 import { Router } from "express";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import verifyUser from "../middlewares/verifyUser.js";
-import userControllers from "../controller/user.controller.js";
+import userControllers from "../controller/user.controller";
 
 const userRouter = Router();
 
