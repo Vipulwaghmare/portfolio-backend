@@ -50,12 +50,13 @@ userSchema.pre("updateOne", async function (next) {
   this.password = await hash(this.password, 10);
 });
 
-userSchema.methods.isValidatedPassword = async function (usersendPassword) {
+userSchema.methods.isValidatedPassword = async function (usersendPassword: string) {
   return await compare(usersendPassword, this.password);
 };
+
 userSchema.methods.getAccessToken = function () {
   return jwt.sign(
-    { id: this._id, email: this.email },
+    { userId: this._id, userEmail: this.email },
     process.env.ACCESS_TOKEN_SECRET,
     {
       expiresIn: "1d",
@@ -65,7 +66,7 @@ userSchema.methods.getAccessToken = function () {
 
 userSchema.methods.getRefreshToken = function () {
   return jwt.sign(
-    { id: this._id, email: this.email },
+    { userId: this._id, userEmail: this.email },
     process.env.REFRESH_TOKEN_SECRET,
     {
       expiresIn: "3d",
