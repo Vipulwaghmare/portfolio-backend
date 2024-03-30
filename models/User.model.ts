@@ -1,24 +1,24 @@
-import { compare, hash } from "bcrypt";
-import jwt from "jsonwebtoken";
-import { Schema, model } from "mongoose";
-import validator from "validator";
+import { compare, hash } from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import { Schema, model } from 'mongoose';
+import validator from 'validator';
 
 const userSchema = new Schema({
   name: {
     type: String,
-    required: [true, "Please provide name"],
+    required: [true, 'Please provide name'],
     unique: true,
   },
   email: {
     type: String,
-    required: [true, "Please provide an email"],
-    validate: [validator.isEmail, "Please enter email in correct format"],
+    required: [true, 'Please provide an email'],
+    validate: [validator.isEmail, 'Please enter email in correct format'],
     unique: true,
   },
   password: {
     type: String,
-    required: [true, "Please provide a password"],
-    minlength: [6, "password should be atleast 6 char"],
+    required: [true, 'Please provide a password'],
+    minlength: [6, 'password should be atleast 6 char'],
     select: false,
   },
   passwordResetData: {
@@ -36,21 +36,27 @@ const userSchema = new Schema({
   },
 });
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
     return next();
   }
   this.password = await hash(this.password, 10);
 });
 
-userSchema.pre("updateOne", async function (next) {
-  if (!this.isModified("password")) {
-    return next();
-  }
-  this.password = await hash(this.password, 10);
-});
+userSchema.pre(
+  'updateOne',
+  { document: true, query: false },
+  async function (next) {
+    if (!this.isModified('password')) {
+      return next();
+    }
+    this.password = await hash(this.password, 10);
+  },
+);
 
-userSchema.methods.isValidatedPassword = async function (usersendPassword: string) {
+userSchema.methods.isValidatedPassword = async function (
+  usersendPassword: string,
+) {
   return await compare(usersendPassword, this.password);
 };
 
@@ -59,7 +65,7 @@ userSchema.methods.getAccessToken = function () {
     { userId: this._id, userEmail: this.email },
     process.env.ACCESS_TOKEN_SECRET,
     {
-      expiresIn: "1d",
+      expiresIn: '1d',
     },
   );
 };
@@ -69,11 +75,11 @@ userSchema.methods.getRefreshToken = function () {
     { userId: this._id, userEmail: this.email },
     process.env.REFRESH_TOKEN_SECRET,
     {
-      expiresIn: "3d",
+      expiresIn: '3d',
     },
   );
 };
 
-const User = model("User", userSchema);
+const User = model('User', userSchema);
 
 export default User;

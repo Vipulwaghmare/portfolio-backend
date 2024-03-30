@@ -1,5 +1,5 @@
-import mongoose from "mongoose";
-import Todo from "../models/Todo.model";
+import mongoose from 'mongoose';
+import Todo from '../models/Todo.model';
 import { TRequest } from './types';
 
 type TodoControllers = {
@@ -36,17 +36,20 @@ const todoControllers: TodoControllers = {
   },
   updateTodo: async (req, res) => {
     const id = req.params.id;
-    const updatedTodo = await Todo.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedTodo = await Todo.findByIdAndUpdate(id, req.body, {
+      new: true,
+    });
     return res.status(200).json(updatedTodo);
   },
   deleteTodo: async (req, res) => {
     const id = req.params.id;
     const todo = await Todo.findById(id);
-    if (todo.userId.toString() === req.body.userId) {
+    if (!todo) throw new Error('Todo not found');
+    if (todo.userId?.toString() === req.body.userId) {
       const deletedTodo = await todo.deleteOne();
       return res.status(200).json(deletedTodo);
     } else {
-      return res.status(401).json({ message: "Unauthorized" });
+      return res.status(401).json({ message: 'Unauthorized' });
     }
   },
   deleteUserTodos: async (req, res) => {

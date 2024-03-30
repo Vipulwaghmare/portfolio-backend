@@ -1,15 +1,15 @@
-import Chat from "../models/Chat.model";
-import User from "../models/User.model";
+import Chat from '../models/Chat.model';
+import User from '../models/User.model';
 
 const chatCommonAggregation = () => {
   return [
     {
       // lookup for the participants present
       $lookup: {
-        from: "users",
-        foreignField: "_id",
-        localField: "participants",
-        as: "participants",
+        from: 'users',
+        foreignField: '_id',
+        localField: 'participants',
+        as: 'participants',
         pipeline: [
           {
             $project: {
@@ -27,18 +27,18 @@ const chatCommonAggregation = () => {
     {
       // lookup for the group chats
       $lookup: {
-        from: "chatmessages",
-        foreignField: "_id",
-        localField: "lastMessage",
-        as: "lastMessage",
+        from: 'chatmessages',
+        foreignField: '_id',
+        localField: 'lastMessage',
+        as: 'lastMessage',
         pipeline: [
           {
             // get details of the sender
             $lookup: {
-              from: "users",
-              foreignField: "_id",
-              localField: "sender",
-              as: "sender",
+              from: 'users',
+              foreignField: '_id',
+              localField: 'sender',
+              as: 'sender',
               pipeline: [
                 {
                   $project: {
@@ -52,7 +52,7 @@ const chatCommonAggregation = () => {
           },
           {
             $addFields: {
-              sender: { $first: "$sender" },
+              sender: { $first: '$sender' },
             },
           },
         ],
@@ -60,14 +60,14 @@ const chatCommonAggregation = () => {
     },
     {
       $addFields: {
-        lastMessage: { $first: "$lastMessage" },
+        lastMessage: { $first: '$lastMessage' },
       },
     },
   ];
 };
 
 const chatServices = {
-  getAllUserChats(userId) {
+  getAllUserChats(userId: string) {
     return Chat.aggregate([
       {
         $match: {
@@ -82,7 +82,7 @@ const chatServices = {
       ...chatCommonAggregation(),
     ]);
   },
-  searchUser(userId) {
+  searchUser(userId: string) {
     return User.aggregate([
       {
         $match: {

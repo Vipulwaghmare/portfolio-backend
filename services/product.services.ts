@@ -1,15 +1,16 @@
-import Product from "../models/Product.model";
+import Product from '../models/Product.model';
 
 const productServices = {
-  getProductById: (id) => Product.findById(id),
-  createProduct: async (productData, userId) => {
+  getProductById: (id: string) => Product.findById(id),
+  createProduct: async (productData: any, userId: string) => {
+    // TODO: add type
     const product = {
       ...productData,
       createdBy: userId,
     };
     return Product.create(product);
   },
-  deleteProduct: (id) => Product.deleteOne({ _id: id }),
+  deleteProduct: (id: string) => Product.deleteOne({ _id: id }),
 };
 
 export default productServices;

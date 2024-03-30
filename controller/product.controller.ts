@@ -1,6 +1,6 @@
-import APIError from "../middlewares/ErrorHandler";
-import productServices from "../services/product.services";
-import { TRequest } from "./types.js";
+import APIError from '../middlewares/ErrorHandler';
+import productServices from '../services/product.services';
+import { TRequest } from './types.js';
 
 const MAX_LIMIT = 100;
 
@@ -17,7 +17,7 @@ const productControllers: ProductControllers = {
     const productId = req.params.id;
     if (!productId) {
       throw new APIError({
-        message: "Product Id is not provided",
+        message: 'Product Id is not provided',
         status: 400,
       });
     }
@@ -25,13 +25,13 @@ const productControllers: ProductControllers = {
     if (!product) {
       return res.send({
         product: null,
-        message: "Product not found",
+        message: 'Product not found',
       });
     }
     return res.send({ product });
   },
   getProducts: async (req, res) => {
-    let { limit = "10", pageNumber = "1" } = req.query;
+    let { limit = '10' as any, pageNumber = '1' as any } = req.query;
     limit = parseInt(limit) > MAX_LIMIT ? MAX_LIMIT : parseInt(limit);
     pageNumber = parseInt(pageNumber);
 
@@ -49,16 +49,16 @@ const productControllers: ProductControllers = {
     return res.send(product);
   },
   updateProduct: async (req, res) => {
-    return res.send({ message: 'WIP' })
+    return res.send({ message: 'WIP' });
   },
   deleteProduct: async (req, res) => {
     const productId = req.params.id;
     const product = await productServices.deleteProduct(productId);
     if (product.deletedCount === 1) {
-      return res.send({ message: "Product deleted successfully" });
+      return res.send({ message: 'Product deleted successfully' });
     }
-    return res.send({ message: "Product not found" });
+    return res.send({ message: 'Product not found' });
   },
-}
+};
 
 export default productControllers;

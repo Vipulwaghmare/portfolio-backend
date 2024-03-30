@@ -1,37 +1,41 @@
-import { Server, Socket } from "socket.io";
-import { DefaultEventsMap } from "socket.io/dist/typed-events";
+import { Server, Socket } from 'socket.io';
+import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 export const CHAT_EVENTS = {
-  JOIN_CHAT: "JOIN_CHAT",
-  START_TYPING: "START_TYPING",
-  STOP_TYPING: "STOP_TYPING",
-  DISCONNECT: "DISCONNECT",
-  SOCKET_ERROR: "SOCKET_ERROR",
+  JOIN_CHAT: 'JOIN_CHAT',
+  START_TYPING: 'START_TYPING',
+  STOP_TYPING: 'STOP_TYPING',
+  DISCONNECT: 'DISCONNECT',
+  SOCKET_ERROR: 'SOCKET_ERROR',
 } as const;
 
-const mountEvents = (socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
+const mountEvents = (
+  socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
+) => {
   // Join chat
-  socket.on(CHAT_EVENTS.JOIN_CHAT, (chatId) => {
+  socket.on(CHAT_EVENTS.JOIN_CHAT, chatId => {
     socket.join(chatId);
   });
   // Start Typing
-  socket.on(CHAT_EVENTS.START_TYPING, (chatId) => {
+  socket.on(CHAT_EVENTS.START_TYPING, chatId => {
     socket.in(chatId).emit(CHAT_EVENTS.START_TYPING, chatId);
   });
   // Stop Typing
-  socket.on(CHAT_EVENTS.STOP_TYPING, (chatId) => {
+  socket.on(CHAT_EVENTS.STOP_TYPING, chatId => {
     socket.in(chatId).emit(CHAT_EVENTS.STOP_TYPING, chatId);
   });
   // Disconnect User
   socket.on(CHAT_EVENTS.DISCONNECT, () => {
-    if (socket.user?._id) {
-      socket.leave(socket.user._id);
-    }
+    // if (socket.user?._id) {
+    //   socket.leave(socket.user._id);
+    // }
   });
 };
 
-const initializeSocketIO = (io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>) => {
-  return io.on("connection", async (socket) => {
+const initializeSocketIO = (
+  io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
+) => {
+  return io.on('connection', async socket => {
     try {
       // // parse the cookies from the handshake headers (This is only possible if client has `withCredentials: true`)
       // const cookies = cookie.parse(socket.handshake.headers?.cookie || "");
@@ -70,8 +74,8 @@ const initializeSocketIO = (io: Server<DefaultEventsMap, DefaultEventsMap, Defau
     } catch (error) {
       socket.emit(
         CHAT_EVENTS.SOCKET_ERROR,
-        error?.message ||
-        "Something went wrong while connecting to the socket.",
+        // error?.message ||
+        'Something went wrong while connecting to the socket.',
       );
     }
   });

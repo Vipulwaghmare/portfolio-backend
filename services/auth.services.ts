@@ -1,12 +1,13 @@
-import User from "../models/User.model";
+import User from '../models/User.model';
 
-const skippableUserFields = "-__v -passwordResetData";
-
+const skippableUserFields = '-__v -passwordResetData';
+// TODO: Add types
 const authServices = {
-  getUserByEmail: (email) => User.findOne({ email }, "password"),
-  getUserById: (userId) => User.findOne({ _id: userId }, skippableUserFields),
-  createUser: (data) => User.create(data),
-  updateUser: (userId, data) =>
+  getUserByEmail: (email: string) => User.findOne({ email }, 'password'),
+  getUserById: (userId: string) =>
+    User.findOne({ _id: userId }, skippableUserFields),
+  createUser: (data: any) => User.create(data),
+  updateUser: (userId: string, data: any) =>
     User.findOneAndUpdate(
       { _id: userId },
       {
@@ -14,29 +15,34 @@ const authServices = {
       },
       { new: true, fields: skippableUserFields },
     ),
-  validatePassword: (user, password) => user.isValidatedPassword(password),
-  getAccessToken: (user) => user.getAccessToken(),
-  getRefreshToken: (user) => user.getRefreshToken(),
-  async updateUserPassword(email, password) {
+  validatePassword: (user: any, password: string) =>
+    user.isValidatedPassword(password),
+  getAccessToken: (user: any) => user.getAccessToken(),
+  getRefreshToken: (user: any) => user.getRefreshToken(),
+  async updateUserPassword(email: string, password: string) {
     const user = await User.findOne({ email });
+    if (user === null) throw new Error('User not found');
     user.password = password;
     await user.save();
     return user;
   },
-  updateUserPasswordResetData: async (email, passwordResetData) => {
+  updateUserPasswordResetData: async (
+    email: string,
+    passwordResetData: any,
+  ) => {
     await User.findOneAndUpdate(
       { email },
       {
         $set: {
-          "passwordResetData.expiryTime": passwordResetData.expiryTime,
-          "passwordResetData.token": passwordResetData.token,
+          'passwordResetData.expiryTime': passwordResetData.expiryTime,
+          'passwordResetData.token': passwordResetData.token,
         },
       },
       { new: true },
     );
   },
-  getUserByForgotPasswordToken: (token) =>
-    User.findOne({ "passwordResetData.token": token }),
+  getUserByForgotPasswordToken: (token: string) =>
+    User.findOne({ 'passwordResetData.token': token }),
 };
 
 export default authServices;
