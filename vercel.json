@@ -13,5 +13,5 @@
       "dest": "build/index.js"
     }
   ],
-  "buildCommand": "next build"
+  "buildCommand": "npm run start"
 }
