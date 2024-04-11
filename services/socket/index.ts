@@ -10,6 +10,7 @@ export const CHAT_EVENTS = {
 } as const;
 
 const mountEvents = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
 ) => {
   // Join chat
@@ -33,6 +34,7 @@ const mountEvents = (
 };
 
 const initializeSocketIO = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
 ) => {
   return io.on('connection', async socket => {

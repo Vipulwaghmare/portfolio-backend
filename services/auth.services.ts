@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import User from '../models/User.model';
 
 const skippableUserFields = '-__v -passwordResetData';
+
 // TODO: Add types
 const authServices = {
   getUserByEmail: (email: string) => User.findOne({ email }, 'password'),
   getUserById: (userId: string) =>
     User.findOne({ _id: userId }, skippableUserFields),
-  createUser: (data: any) => User.create(data),
+  createUser: (data: unknown) => User.create(data),
   updateUser: (userId: string, data: any) =>
     User.findOneAndUpdate(
       { _id: userId },

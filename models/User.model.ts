@@ -1,9 +1,27 @@
 import { compare, hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { Schema, model } from 'mongoose';
+import { Model, Schema, model } from 'mongoose';
 import validator from 'validator';
 
-const userSchema = new Schema({
+interface IUser {
+  name: string;
+  email: string;
+  password: string;
+  passwordResetData?: {
+    expiryTime: Date | null;
+    token: string | null;
+  };
+}
+
+interface IUserMethods {
+  isValidatedPassword: (arg0: string) => Promise<boolean>;
+  getAccessToken: () => string;
+  getRefreshToken: () => string;
+}
+
+type UserModel = Model<IUser, unknown, IUserMethods>;
+
+const userSchema = new Schema<IUser, UserModel, IUserMethods>({
   name: {
     type: String,
     required: [true, 'Please provide name'],
@@ -80,6 +98,6 @@ userSchema.methods.getRefreshToken = function () {
   );
 };
 
-const User = model('User', userSchema);
+const User = model<IUser, UserModel>('User', userSchema);
 
 export default User;
