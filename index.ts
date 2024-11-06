@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express from 'express';
 import { createServer } from 'http';
 import dotEnv from 'dotenv';
 dotEnv.config();
@@ -14,6 +14,7 @@ import connectToDatabase from './config/database';
 import authRouter from './routes/auth.routes';
 import productRouter from './routes/product.routes';
 import todoRouter from './routes/todo.routes';
+import uploadRouter from './routes/upload.routes';
 import { notFound, convertError } from './middlewares/ErrorHandler';
 import userRouter from './routes/user.routes';
 import rateLimiter from './middlewares/rateLimiter';
@@ -52,6 +53,7 @@ app.use('/api/v1/user', userRouter);
 app.use('/api/v1', productRouter);
 app.use('/api/v1/todo', todoRouter);
 app.use('/api/v1/chat', chatRouter);
+app.use('/api/v1/upload', uploadRouter);
 
 // Error Handling
 app.use(notFound);

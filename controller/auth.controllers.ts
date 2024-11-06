@@ -1,17 +1,22 @@
-
-import logger from "../config/logger";
-import APIError from "../middlewares/ErrorHandler";
-import { accessTokenSchema, forgotPasswordSchema, loginSchema, registerSchema, resetPasswordSchema, updatePasswordSchema } from "../schemas/auth.schema";
-import authServices from "../services/auth.services";
-import { genRandomString } from "../utils/crypto.utils";
-import { verifyRefreshToken } from "../utils/jwt.utils";
+import logger from '../config/logger';
+import APIError from '../middlewares/ErrorHandler';
+import {
+  accessTokenSchema,
+  forgotPasswordSchema,
+  loginSchema,
+  registerSchema,
+  resetPasswordSchema,
+  updatePasswordSchema,
+} from '../schemas/auth.schema';
+import authServices from '../services/auth.services';
+import { genRandomString } from '../utils/crypto.utils';
+import { verifyRefreshToken } from '../utils/jwt.utils';
 import {
   passwordUpdatedEmail,
   passwordUpdatedFailedEmail,
   sendPasswordResetEmail,
-} from "../utils/mail.utils";
+} from '../utils/mail.utils';
 import { TRequest } from './types';
-
 
 type TAuthController = {
   login: TRequest;
@@ -26,10 +31,10 @@ const authControllers: TAuthController = {
   login: async (req, res) => {
     const requestBody = loginSchema.parse(req.body);
     const { email, password } = requestBody;
-    logger.info("[Logging In] email: %s", email);
+    logger.info('[Logging In] email: %s', email);
     if (!email || !password) {
       throw new APIError({
-        message: "Email and Password are required",
+        message: 'Email and Password are required',
         status: 400,
       });
     }
@@ -37,7 +42,7 @@ const authControllers: TAuthController = {
 
     if (!user) {
       throw new APIError({
-        message: "User not found",
+        message: 'User not found',
         status: 400,
       });
     }
@@ -60,11 +65,11 @@ const authControllers: TAuthController = {
   register: async (req, res) => {
     const requestBody = registerSchema.parse(req.body);
     const { name, email, password } = requestBody;
-    logger.info("[Sign Up] email: %s", email);
+    logger.info('[Sign Up] email: %s', email);
 
     if (!email || !password) {
       throw new APIError({
-        message: "Email and Password are required",
+        message: 'Email and Password are required',
         status: 400,
       });
     }
@@ -72,7 +77,7 @@ const authControllers: TAuthController = {
 
     if (isExisting) {
       throw new APIError({
-        message: "Email is already in use",
+        message: 'Email is already in use',
         status: 409,
       });
     }
@@ -82,9 +87,9 @@ const authControllers: TAuthController = {
       name,
     };
     const user = await authServices.createUser(payload);
-    logger.info("[Sign Up] [user created successfully] email: %s", email);
+    logger.info('[Sign Up] [user created successfully] email: %s', email);
     return res.status(201).json({
-      success: "User is successfully created",
+      success: 'User is successfully created',
       user,
     });
   },
@@ -94,7 +99,7 @@ const authControllers: TAuthController = {
     const isVerified = await verifyRefreshToken(refreshToken);
     if (!isVerified) {
       throw new APIError({
-        message: "Invalid refresh token provided",
+        message: 'Invalid refresh token provided',
         status: 400,
       });
     }
@@ -109,10 +114,10 @@ const authControllers: TAuthController = {
   updatePassword: async (req, res) => {
     const body = updatePasswordSchema.parse(req.body);
     const { userId, oldPassword, newPassword } = body;
-    logger.info("[Updating password] UserId: %s", userId);
+    logger.info('[Updating password] UserId: %s', userId);
     if (!oldPassword || !newPassword) {
       throw new APIError({
-        message: "Invalid request",
+        message: 'Invalid request',
         status: 400,
       });
     }
@@ -120,7 +125,7 @@ const authControllers: TAuthController = {
 
     if (!user) {
       throw new APIError({
-        message: "User not found",
+        message: 'User not found',
         status: 400,
       });
     }
@@ -139,16 +144,16 @@ const authControllers: TAuthController = {
       newPassword,
     );
     passwordUpdatedEmail(userEmail);
-    logger.info("[Password Updated] email: %s", userEmail);
+    logger.info('[Password Updated] email: %s', userEmail);
     return res.json(updatedUser);
   },
   forgotPassword: async (req, res) => {
     const body = forgotPasswordSchema.parse(req.body);
     const { email } = body;
-    logger.info("[Forgot Password Request] email: %s", email);
+    logger.info('[Forgot Password Request] email: %s', email);
     if (!email) {
       throw new APIError({
-        message: "Invalid request. Please provide email.",
+        message: 'Invalid request. Please provide email.',
         status: 400,
       });
     }
@@ -156,7 +161,7 @@ const authControllers: TAuthController = {
 
     if (!user) {
       throw new APIError({
-        message: "User not found",
+        message: 'User not found',
         status: 400,
       });
     }
@@ -174,7 +179,7 @@ const authControllers: TAuthController = {
     await sendPasswordResetEmail(email, token);
 
     return res.json({
-      message: "Successfully send password reset email to your email",
+      message: 'Successfully send password reset email to your email',
     });
   },
   resetPassword: async (req, res) => {
@@ -182,30 +187,29 @@ const authControllers: TAuthController = {
     const { password, token } = body;
     if (!password || !token) {
       throw new APIError({
-        message: "Invalid request",
+        message: 'Invalid request',
         status: 400,
       });
     }
     const user = await authServices.getUserByForgotPasswordToken(token);
     if (!user?.passwordResetData?.expiryTime) {
       throw new APIError({
-        message: "You have not requested to reset password",
+        message: 'You have not requested to reset password',
         status: 400,
       });
     }
 
     if (user.passwordResetData.expiryTime <= new Date()) {
       throw new APIError({
-        message: "Your password reset link is expired. Please try again.",
+        message: 'Your password reset link is expired. Please try again.',
         status: 400,
       });
     }
     await authServices.updateUserPassword(user.email, password);
     return res.json({
-      message: "Successfully updated user password",
+      message: 'Successfully updated user password',
     });
-  }
+  },
 };
-
 
 export default authControllers;

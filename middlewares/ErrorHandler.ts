@@ -1,13 +1,13 @@
-import { ErrorRequestHandler, NextFunction, Request, Response } from "express";
-import logger from "../config/logger";
-import { ZodError } from "zod";
+import { Request, Response } from 'express';
+import logger from '../config/logger';
+import { ZodError } from 'zod';
 
 type TApiError = {
   message: string;
   status: number;
   stack?: string;
   errors?: string[];
-}
+};
 
 export const errorHandler = (err: TApiError, req: Request, res: Response) => {
   logger.error(err.message);
@@ -20,8 +20,8 @@ export const errorHandler = (err: TApiError, req: Request, res: Response) => {
 };
 
 class APIError extends Error {
-  message: TApiError["message"];
-  status: TApiError["status"];
+  message: TApiError['message'];
+  status: TApiError['status'];
 
   constructor({ message, status }: TApiError) {
     super(message);
@@ -31,9 +31,8 @@ class APIError extends Error {
   }
 }
 
-export const convertError = (err: any, req: Request, res: Response, next: NextFunction) => {
+export const convertError = (err: any, req: Request, res: Response) => {
   let convertedError = err;
-  console.log('aaa', err instanceof ZodError, err instanceof APIError)
   if (err instanceof ZodError) {
     convertedError = new APIError({
       message: 'Invalid request body', // TODO: Change
@@ -51,7 +50,7 @@ export const convertError = (err: any, req: Request, res: Response, next: NextFu
 
 export const notFound = (req: Request, res: Response) => {
   const err = new APIError({
-    message: "API not found",
+    message: 'API not found',
     status: 404,
   });
   return errorHandler(err, req, res);
