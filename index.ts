@@ -7,7 +7,6 @@ import requestIp from 'request-ip';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import YAML from 'yamljs';
-import mongoose from 'mongoose';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import connectToDatabase from './config/database';
@@ -48,6 +47,7 @@ app.use(rateLimiter);
 
 // Routes
 app.get('/', (_, res) => res.send('Welcome to API'));
+app.get('/env', (_, res) => res.send(process.env));
 app.use('/api/v1', authRouter);
 app.use('/api/v1/user', userRouter);
 app.use('/api/v1', productRouter);
@@ -59,10 +59,13 @@ app.use('/api/v1/upload', uploadRouter);
 app.use(notFound);
 app.use(convertError);
 
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 1000;
 
-mongoose.connection.once('open', () => {
-  httpServer.listen(PORT, () => {
-    console.log(`App is running at ${PORT}`);
-  });
+// mongoose.connection.once('open', () => {
+//   httpServer.listen(PORT, () => {
+//     console.log(`App is running at ${PORT}`);
+//   });
+// });
+httpServer.listen(PORT, () => {
+  console.log(`App is running at ${PORT}`);
 });
